@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Makanan Impianku</title>
+    <!-- Memuat Tailwind CSS untuk styling modern dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Konfigurasi Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#4f46e5', // Indigo
+                        'secondary': '#facc15', // Kuning/Emas
+                        'bg-light': '#fef3c7', // Kuning sangat muda
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles */
+        body {
+            background-color: #f7f7f7;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+        
+        /* Gaya untuk tombol jawaban */
+        .answer-button {
+            transition: all 0.2s ease;
+        }
+        .answer-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.5);
+        }
+        .answer-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-extrabold text-primary mb-2">🍽️ Kuis Makanan Impianku 🍕</h1>
+        <p class="text-gray-600 text-lg">Jawab pertanyaan untuk mengetahui makanan apa yang sedang kamu inginkan!</p>
+    </header>
+
+    <main class="quiz-container">
+        <!-- Area Kuis/Hasil -->
+        <div id="quiz-area">
+            <!-- Konten kuis atau hasil akan muncul di sini -->
+        </div>
+
+        <!-- Tombol Navigasi Kuis -->
+        <div id="quiz-navigation" class="mt-8 flex justify-between">
+            <button id="prev-button" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-xl answer-button" style="display: none;">
+                &larr; Sebelumnya
+            </button>
+            <button id="next-button" class="bg-primary hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-xl answer-button" style="display: none;">
+                Selanjutnya &rarr;
+            </button>
+            <button id="restart-button" class="bg-secondary hover:bg-yellow-500 text-gray-800 font-bold py-2 px-4 rounded-xl answer-button" style="display: none;">
+                Ulangi Kuis
+            </button>
+        </div>
+    </main>
+
+    <footer class="mt-8 text-sm text-gray-500">
+        <p>Aplikasi Kuis Makanan Sederhana dibuat dengan HTML, Tailwind CSS, dan JavaScript.</p>
+    </footer>
+
+    <script>
+        // Data Kuis: Pertanyaan, Pilihan, dan Poin
+        // Setiap jawaban memberikan poin ke kategori makanan tertentu.
+        const quizData = [
+            {
+                question: "Apa suasana hatimu saat ini?",
+                options: [
+                    { text: "Lelah dan ingin bersantai", points: { Comfort: 3, Sweet: 1 } },
+                    { text: "Bersemangat dan energik", points: { Savory: 3, Spicy: 1 } },
+                    { text: "Butuh sesuatu yang menyegarkan", points: { Light: 3, Sweet: 2 } },
+                    { text: "Merasa sangat lapar!", points: { Heavy: 3, Savory: 2 } }
+                ]
+            },
+            {
+                question: "Apa yang kamu rasakan di luar sekarang?",
+                options: [
+                    { text: "Dingin atau berangin", points: { Comfort: 3, Spicy: 2 } },
+                    { text: "Panas dan cerah", points: { Light: 3, Sweet: 1 } },
+                    { text: "Biasa saja/di dalam ruangan", points: { Savory: 1, Heavy: 1 } },
+                    { text: "Lagi hujan atau cuaca buruk", points: { Comfort: 2, Heavy: 3 } }
+                ]
+            },
+            {
+                question: "Mana tekstur yang paling menarik bagimu?",
+                options: [
+                    { text: "Garing dan renyah", points: { Savory: 3, Spicy: 1 } },
+                    { text: "Krim dan lembut", points: { Comfort: 3, Sweet: 2 } },
+                    { text: "Segar dan berair", points: { Light: 3 } },
+                    { text: "Kenyal dan padat", points: { Heavy: 2 } }
+                ]
+            }
+        ];
+
+        // Hasil Makanan (Kategori dan Deskripsi)
+        const foodResults = {
+            Comfort: {
+                name: "Makanan Kenyamanan (Comfort Food) 🍲",
+                description: "Kamu butuh sesuatu yang hangat, menenangkan, dan familiar. Pikirkan pasta krim, sup, mac and cheese, atau makanan rumahan yang lembut.",
+                color: "text-red-600"
+            },
+            Sweet: {
+                name: "Makanan Manis (Dessert) 🍰",
+                description: "Kamu butuh dorongan energi manis! Es krim, kue, cokelat, atau minuman manis akan memuaskan keinginanmu.",
+                color: "text-pink-600"
+            },
+            Savory: {
+                name: "Makanan Gurih (Umami) 🍔",
+                description: "Kamu mendambakan rasa asin, gurih, dan penuh cita rasa. Pizza, burger, kentang goreng, atau hidangan daging/keju adalah pilihan terbaik.",
+                color: "text-green-600"
+            },
+            Light: {
+                name: "Makanan Ringan & Segar (Fresh) 🥗",
+                description: "Tubuhmu ingin sesuatu yang menyegarkan dan ringan. Salad, buah-buahan, *smoothie*, atau makanan laut yang diolah ringan adalah jawabannya.",
+                color: "text-blue-600"
+            },
+            Spicy: {
+                name: "Makanan Pedas (Spicy) 🌶️",
+                description: "Kamu butuh sedikit sensasi dan kehangatan! Pikirkan makanan Thailand pedas, sambal, atau hidangan Meksiko yang berapi-api.",
+                color: "text-orange-600"
+            },
+            Heavy: {
+                name: "Makanan Berat & Mengenyangkan 🍚",
+                description: "Kamu sangat lapar dan butuh porsi besar yang mengenyangkan. Nasi, steak, hidangan berkuah kental, atau makanan berkarbohidrat tinggi lainnya.",
+                color: "text-purple-600"
+            }
+        };
+
+        // State Game
+        let currentQuestionIndex = 0;
+        let scores = {
+            Comfort: 0,
+            Sweet: 0,
+            Savory: 0,
+            Light: 0,
+            Spicy: 0,
+            Heavy: 0
+        };
+
+        // Elemen DOM
+        const quizArea = document.getElementById('quiz-area');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const restartButton = document.getElementById('restart-button');
+
+        /**
+         * Render pertanyaan kuis saat ini.
+         */
+        function renderQuestion() {
+            // Hapus konten lama
+            quizArea.innerHTML = '';
+            
+            // Sembunyikan tombol yang tidak perlu
+            prevButton.style.display = currentQuestionIndex > 0 ? 'inline-block' : 'none';
+            nextButton.style.display = 'none'; // Tombol Next hanya muncul setelah memilih
+            restartButton.style.display = 'none';
+
+            if (currentQuestionIndex < quizData.length) {
+                const qData = quizData[currentQuestionIndex];
+
+                // Judul pertanyaan
+                const questionTitle = document.createElement('h2');
+                questionTitle.className = "text-xl font-bold text-gray-800 mb-4";
+                questionTitle.textContent = `Pertanyaan ${currentQuestionIndex + 1} dari ${quizData.length}: ${qData.question}`;
+                quizArea.appendChild(questionTitle);
+
+                // Kontainer Jawaban
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = "space-y-3";
+
+                qData.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = option.text;
+                    button.className = `answer-button w-full text-left bg-bg-light hover:bg-secondary border-l-4 border-primary hover:border-secondary text-gray-700 py-3 px-4 rounded-xl font-medium`;
+                    
+                    button.onclick = () => handleAnswer(option.points);
+                    optionsContainer.appendChild(button);
+                });
+
+                quizArea.appendChild(optionsContainer);
+
+            } else {
+                // Tampilkan Hasil
+                showResult();
+            }
+        }
+
+        /**
+         * Menangani jawaban yang dipilih, menghitung skor, dan pindah ke pertanyaan berikutnya.
+         * @param {object} points - Objek yang berisi poin untuk ditambahkan ke skor.
+         */
+        function handleAnswer(points) {
+            // Tambahkan poin ke skor (ini adalah implementasi sederhana, aslinya akan lebih kompleks jika ingin fitur "undo")
+            // Untuk kuis sederhana ini, kita hanya akan maju tanpa menyimpan riwayat jawaban sebelumnya
+            
+            // Tambahkan poin dari pilihan yang baru
+            for (const category in points) {
+                scores[category] += points[category];
+            }
+
+            // Pindah ke pertanyaan berikutnya atau tampilkan hasil
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+
+        /**
+         * Menentukan kategori makanan dengan skor tertinggi.
+         * @returns {string} Nama kategori pemenang.
+         */
+        function getResultCategory() {
+            let maxScore = -1;
+            let resultCategory = 'Savory'; // Default
+
+            for (const category in scores) {
+                if (scores[category] > maxScore) {
+                    maxScore = scores[category];
+                    resultCategory = category;
+                }
+            }
+            return resultCategory;
+        }
+
+        /**
+         * Menampilkan hasil akhir kuis.
+         */
+        function showResult() {
+            quizArea.innerHTML = ''; // Hapus kuis
+            const winnerKey = getResultCategory();
+            const result = foodResults[winnerKey];
+
+            // Tampilkan ikon hasil
+            const icon = winnerKey === 'Comfort' ? '🍲' : winnerKey === 'Sweet' ? '🍰' : winnerKey === 'Savory' ? '🍔' : winnerKey === 'Light' ? '🥗' : winnerKey === 'Spicy' ? '🌶️' : '🍚';
+            
+            // Buat tampilan hasil
+            const resultElement = document.createElement('div');
+            resultElement.className = "text-center p-6 bg-bg-light rounded-xl border-4 border-secondary";
+            resultElement.innerHTML = `
+                <div class="text-6xl mb-4">${icon}</div>
+                <h2 class="text-3xl font-extrabold mb-3 text-gray-800">Makanan Impianmu Adalah...</h2>
+                <h3 class="text-4xl font-black ${result.color} mb-6">${result.name}</h3>
+                <p class="text-lg text-gray-700 leading-relaxed">${result.description}</p>
+                <p class="mt-4 text-sm text-gray-500">
+                    (Total Poin Tertinggi: ${scores[winnerKey]})
+                </p>
+            `;
+            
+            quizArea.appendChild(resultElement);
+
+            // Tampilkan tombol Ulangi
+            restartButton.style.display = 'inline-block';
+            prevButton.style.display = 'none';
+        }
+
+        /**
+         * Menginisialisasi ulang kuis.
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            scores = { Comfort: 0, Sweet: 0, Savory: 0, Light: 0, Spicy: 0, Heavy: 0 };
+            renderQuestion();
+        }
+
+        // --- Inisialisasi Game ---
+        window.onload = function() {
+            renderQuestion();
+            restartButton.addEventListener('click', restartQuiz);
+        };
+    </script>
+</body>
+</html>
